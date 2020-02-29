@@ -1,11 +1,11 @@
 Package: TwitterFollowersNetwork
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Get Twitter networks graphs based on followers and following
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Emile Provendier
+Maintainer: Emile Provendier
+Description: The project aims to give an easy-to-use tool to create followers networks.
+    It is based on rtweet and use Twitter API.
+License: No License yet
 Encoding: UTF-8
 LazyData: true
