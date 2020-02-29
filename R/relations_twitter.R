@@ -8,20 +8,6 @@
 
 # On charge les packages une fois qu'ils sont installés
 library(rtweet)
-library(bit64)
-# Pour utiliser l'API :
-# Obtenir les tokens d'api a l'adresse : https://apps.twitter.com/
-# selectionner l'application et recuperer les clés correspondantes dans les onglets "consumer key" et "consumer secret"
-
-# Recuperation des tweets
-# On range les clés récupéré dans deux variables, "key" et "secret" pour pouvoir les appeler par la suite
-cons_key <- ""
-cons_secret <- ""
-acc_token <- ""
-acc_secret <- ""
-# On utilise la fonction "create_token" pour obtenir l'autorisation de twitter
-twitter_token <- create_token(app = "", consumer_key = cons_key, consumer_secret = cons_secret, access_token = acc_token, access_secret = acc_secret)
-
 ###
 # MODIF POUR NE RÉCUPÉRER EN FILTRANT LES COMPTES LES PLUS GROS Récupérer les followers et les following d'un coup
 ###
