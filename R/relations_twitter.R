@@ -1,34 +1,12 @@
 ###########################################################################
-#
-#
-# Ce script est écrit pour ytransformer la fonction et ne pas taper l'api #
-# à chauqe recherche
-#
+#                                                                         #
+#                                                                         #
+# Main function to get the network                                        #
+#                                                                         #
 ###########################################################################
 
-# On charge les packages une fois qu'ils sont installés
+# loading of Rtweet, needed to use the function
 library(rtweet)
-###
-# MODIF POUR NE RÉCUPÉRER EN FILTRANT LES COMPTES LES PLUS GROS Récupérer les followers et les following d'un coup
-###
-
-## Le problème c'est que dans les 2 principaes fonctions que j'utilise, get_followers et lookup_users, on tape l'api avant de
-# Pourvoir faire un tri. En gros il faut pouvoir trier avant. C'est surtout le get follower qui fait tout foirer. Du coup il faut
-# que je trouve comment sélectionner à l'avance.
-## Si on a une liste de base, il faudrait pouvoir faire défiler cette liste, checker les comptes certifier ou les comptes trop gros,
-# et les supprimer de la liste. À partir de là, on pourra lancer la fonction normale.
-
-## La question du compte certifié ne règle pas le problème des très gros comptes comme elon musk...
-## Je vais faire un test d'abord du filtre de compte certifiés parce que c'ets le plus simple, puis le tri des gros comptes
-## Pour le tri des gros comptes, j'aurai juste à les classer dans l'ordre et j'estime que si la requete est plus grosse que mettons
-# 800000 comptes EN TOUT (~ 200 minutes) j'enlève les plus gros en partant du haut. Je pense qu'on ne perd pas beaucoup d'info car
-# ce ne sont pas les plus gros compte suivi par une personne qui vont nous apprndre grand chose.
-
-
-# Maintenant je dois écrire un code qui filtre une première fois la liste en enlevant les trop gros
-liste_utilisateurs<-c("EricaChenoweth","Mehdi_Moussaid","VINCI_fr","cliffordstott","ProfJohnDrury","GKStill","enlOccurrence","DrAnneTempleton","Affluences_App","GTheraulaz","m2CrowdSafety","wwcrowds","qucit","DigitalBarriers","densityio","deepomatic","brickstream","CrowdControlGuy","CrowdSafetyMag","emmaparkinson","Ecocompteur","Irisys","IntCrowdCon","SMSStoretraffic","SenSource","crowd_matters","xovis_ag","Bert_Bruyninckx","Vaelsys","quantaflow_fr","RetailSensing","ProdcoAnalytics","TomasApeltauer","peoplecounting","quantaflow","Acorel_Comptage","3DCOUNTING","EURECAM","Foxstream_group","TCSBI")
-
-## Cette fonction fonctionne !
 
 get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   longueur_liste_utilisateurs<-length(x)
@@ -90,6 +68,3 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   base_totale<-rbind(followers_total,friends_total)
   return(base_totale)
 }
-
-# La fonction a l'air bien comme ça. On peut ensuite envisager d'ajouter une option de temps (attention, risque de conflit avec
-# l'option max.accounts)
