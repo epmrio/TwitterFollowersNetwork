@@ -30,7 +30,7 @@ liste_utilisateurs<-c("EricaChenoweth","Mehdi_Moussaid","VINCI_fr","cliffordstot
 
 ## Cette fonction fonctionne !
 
-get_twitter_network <- function(x,token=NULL,max.accounts=20000) {
+get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   longueur_liste_utilisateurs<-length(x)
   # On récupère les infos basiques de nos comptes et on le range dans un df
   infos_liste_utilisateurs<-lookup_users(x, token = NULL)
@@ -90,9 +90,6 @@ get_twitter_network <- function(x,token=NULL,max.accounts=20000) {
   base_totale<-rbind(followers_total,friends_total)
   return(base_totale)
 }
-
-test<-get_twitter_network(liste_utilisateurs,max.accounts = 100000)
-View(test)
 
 # La fonction a l'air bien comme ça. On peut ensuite envisager d'ajouter une option de temps (attention, risque de conflit avec
 # l'option max.accounts)
