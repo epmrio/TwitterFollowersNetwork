@@ -15,12 +15,12 @@ library(bit64)
 
 # Recuperation des tweets
 # On range les clés récupéré dans deux variables, "key" et "secret" pour pouvoir les appeler par la suite
-cons_key <- "I23FTwKHbyKe54zO5MaOwQyh3"
-cons_secret <- "bO59POnSJdRNKUnMF8TgbtEYEYT7mr1Di8SJIc30CodjS7Ex82"
-acc_token <- "910137088754044928-PvGSHM1rRyBF6UZi7T4L2ABi2OsEn7K"
-acc_secret <- "vhioGN5VfHw3rRjs4tYx1TUjdUqjMYMAEuD4gMPTEESSQ"
+cons_key <- ""
+cons_secret <- ""
+acc_token <- ""
+acc_secret <- ""
 # On utilise la fonction "create_token" pour obtenir l'autorisation de twitter
-twitter_token <- create_token(app = "gestapp", consumer_key = cons_key, consumer_secret = cons_secret, access_token = acc_token, access_secret = acc_secret)
+twitter_token <- create_token(app = "", consumer_key = cons_key, consumer_secret = cons_secret, access_token = acc_token, access_secret = acc_secret)
 
 ###
 # MODIF POUR NE RÉCUPÉRER EN FILTRANT LES COMPTES LES PLUS GROS Récupérer les followers et les following d'un coup
@@ -64,7 +64,7 @@ get_twitter_network <- function(x,token=NULL,max.accounts=20000) {
     if (decision_1 == "yes") {
       # J'ai modifié ici un élément, j'ai écrit nrow(infos_liste_utilisateurs_ORDER). Avant il y avait la longueur de la liste
       # le problème c'est que avec la longueur de la liste, si il y avait des faux comptes ou des comptes mal écris ou qui
-      # n'existent pas, ça faisiat bugger le process. La différence ici c'est que les comptes qui n'existent pas ne sont pas 
+      # n'existent pas, ça faisiat bugger le process. La différence ici c'est que les comptes qui n'existent pas ne sont pas
       # intégré au dataframe au moment de lookup_users. Donc en me basant sur la longueur du dataframe créé et pas de la liste
       # de départ, je contourne le problème des comptes mal orthographiés
       infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[2:nrow(infos_liste_utilisateurs_ORDER),]
@@ -108,5 +108,5 @@ get_twitter_network <- function(x,token=NULL,max.accounts=20000) {
 test<-get_twitter_network(liste_utilisateurs,max.accounts = 100000)
 View(test)
 
-# La fonction a l'air bien comme ça. On peut ensuite envisager d'ajouter une option de temps (attention, risque de conflit avec 
+# La fonction a l'air bien comme ça. On peut ensuite envisager d'ajouter une option de temps (attention, risque de conflit avec
 # l'option max.accounts)
