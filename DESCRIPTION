@@ -4,8 +4,6 @@ Title: Get Twitter networks graphs based on followers and following
 Version: 0.1.0
 Author: Emile Provendier
 Maintainer: Emile Provendier
-Description: The project aims to give an easy-to-use tool to create followers networks.
-    It is based on rtweet and use Twitter API.
-License: No License yet
+Description: The project aims to give an easy-to-use tool to create followers networks. It is based on rtweet and use Twitter API.
 Encoding: UTF-8
 LazyData: true
