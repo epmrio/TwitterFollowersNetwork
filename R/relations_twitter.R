@@ -51,13 +51,13 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
-    recup<-lookup_users(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = twitter_token)$user_id)
+    recup<-lookup_users(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id)
     followers<-data.frame()
     followers<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     followers$Source<-recup$screen_name
     followers$Target<-element
     followers_total<-rbind(followers_total,followers)
-    recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = twitter_token)$user_id)
+    recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id)
     friends<-data.frame()
     friends<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     friends$Target<-recup$screen_name

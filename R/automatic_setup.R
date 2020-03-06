@@ -19,6 +19,7 @@ auto_setup <- function(variables) {
   } else if (nrow(test)!=0) {
     print("Success ! Your credentials has been saved under the name 'twitter_token'")
   }
+  return(twitter_token)
 }
 
 auto_setup()
