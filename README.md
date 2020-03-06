@@ -8,3 +8,9 @@ Since it is based on the API and that getting the names of accounts can be prett
 Those function needs rtweet package in order to work properly  
 
 Every comment or suggestion is welcome !
+
+
+
+In order to work, you have to use auto_setup once you've loaded the package  
+auto_setup will ask you for your Twitter credential and will then check if those are valid by trying to make a search in the API. This is why you'll get a message saying "searching tweets"  
+Once auto_setup is done you can use relations_twitter() function
