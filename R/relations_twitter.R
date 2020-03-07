@@ -40,14 +40,10 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
       infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[2:nrow(infos_liste_utilisateurs_ORDER),]
       temps_attente_estime_REVU<-round((nrow(infos_liste_utilisateurs_ORDER)/12)*15,digits = 0)
       print(paste0("Le nouveau délai d'attente est estimé à ", temps_attente_estime_REVU, " minutes"))
-      ## la ligne suivante est inutile :
-      #liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
-      longueur_liste_utilisateurs<-length(liste_utilisateurs_REVU)
+      longueur_liste_utilisateurs<-nrow(infos_liste_utilisateurs_ORDER)
       somme_friends_follow = sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
     } else if (decision_1 == "no") {
       print(paste0("The process will continue with ", somme_friends_follow, " accounts and an estimated time of ", temps_attente_estime, " minutes. Hang in there..."))
-      ## la ligne suivante est inutile :
-      #liste_utilisateurs_REVU<-liste_utilisateurs
       break
     }
   }
@@ -56,6 +52,7 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(followers_total)<-c("Source","Target")
   friends_total<-as.data.frame(matrix(0, ncol = 2, nrow = 0))
   colnames(friends_total)<-c("Source","Target")
+  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
