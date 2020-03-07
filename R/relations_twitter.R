@@ -15,6 +15,9 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs[order(infos_liste_utilisateurs$followers_count,decreasing = TRUE),c("screen_name","followers_count","friends_count")]
   # on comptabilise le nombre total de follow.er.ing
   somme_friends_follow<-sum(infos_liste_utilisateurs$followers_count)+sum(infos_liste_utilisateurs$friends_count)
+  # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
+  # que la limite initiale
+  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
   # Maintenant on commence la condition si le nombre de comptes est trop grand, on crée un loop tant que c'est trop grand
   while (somme_friends_follow > max.accounts) {
     # on calcule une estimation du temps d'attente, en minutes. Tous les 14 comptes (environ), on tape l'API. Donc il faut savoir
