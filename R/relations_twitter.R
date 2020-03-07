@@ -18,6 +18,9 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
   # que la limite initiale
   liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+  ## On met ici une première estimation du temps pour que ça le fasse même si le nombre est plus petit que la limite
+  temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
+  print(paste0("Le nombre de comptes à récupérer correspond à ", somme_friends_follow, ". Le délai d'attente est estimé à environ ", temps_attente_estime, " minutes"))
   # Maintenant on commence la condition si le nombre de comptes est trop grand, on crée un loop tant que c'est trop grand
   while (somme_friends_follow > max.accounts) {
     # on calcule une estimation du temps d'attente, en minutes. Tous les 14 comptes (environ), on tape l'API. Donc il faut savoir
@@ -37,12 +40,14 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
       infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[2:nrow(infos_liste_utilisateurs_ORDER),]
       temps_attente_estime_REVU<-round((nrow(infos_liste_utilisateurs_ORDER)/12)*15,digits = 0)
       print(paste0("Le nouveau délai d'attente est estimé à ", temps_attente_estime_REVU, " minutes"))
-      liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+      ## la ligne suivante est inutile :
+      #liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
       longueur_liste_utilisateurs<-length(liste_utilisateurs_REVU)
       somme_friends_follow = sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
     } else if (decision_1 == "no") {
       print(paste0("The process will continue with ", somme_friends_follow, " accounts and an estimated time of ", temps_attente_estime, " minutes. Hang in there..."))
-      liste_utilisateurs_REVU<-liste_utilisateurs
+      ## la ligne suivante est inutile :
+      #liste_utilisateurs_REVU<-liste_utilisateurs
       break
     }
   }
