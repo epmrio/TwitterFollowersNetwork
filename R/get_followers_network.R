@@ -8,13 +8,19 @@
 # loading of Rtweet, needed to use the function
 library(rtweet)
 
-get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
+get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   longueur_liste_utilisateurs<-length(x)
   # On récupère les infos basiques de nos comptes et on le range dans un df
   infos_liste_utilisateurs<-lookup_users(x, token = NULL)
   infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs[order(infos_liste_utilisateurs$followers_count,decreasing = TRUE),c("screen_name","followers_count","friends_count")]
   # on comptabilise le nombre total de follow.er.ing
   somme_friends_follow<-sum(infos_liste_utilisateurs$followers_count)+sum(infos_liste_utilisateurs$friends_count)
+  # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
+  # que la limite initiale
+  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+  ## On met ici une première estimation du temps pour que ça le fasse même si le nombre est plus petit que la limite
+  temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
+  print(paste0("Le nombre de comptes à récupérer correspond à ", somme_friends_follow, ". Le délai d'attente est estimé à environ ", temps_attente_estime, " minutes"))
   # Maintenant on commence la condition si le nombre de comptes est trop grand, on crée un loop tant que c'est trop grand
   while (somme_friends_follow > max.accounts) {
     # on calcule une estimation du temps d'attente, en minutes. Tous les 14 comptes (environ), on tape l'API. Donc il faut savoir
@@ -34,12 +40,10 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
       infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[2:nrow(infos_liste_utilisateurs_ORDER),]
       temps_attente_estime_REVU<-round((nrow(infos_liste_utilisateurs_ORDER)/12)*15,digits = 0)
       print(paste0("Le nouveau délai d'attente est estimé à ", temps_attente_estime_REVU, " minutes"))
-      liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
-      longueur_liste_utilisateurs<-length(liste_utilisateurs_REVU)
+      longueur_liste_utilisateurs<-nrow(infos_liste_utilisateurs_ORDER)
       somme_friends_follow = sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
     } else if (decision_1 == "no") {
       print(paste0("The process will continue with ", somme_friends_follow, " accounts and an estimated time of ", temps_attente_estime, " minutes. Hang in there..."))
-      liste_utilisateurs_REVU<-liste_utilisateurs
       break
     }
   }
@@ -48,6 +52,7 @@ get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(followers_total)<-c("Source","Target")
   friends_total<-as.data.frame(matrix(0, ncol = 2, nrow = 0))
   colnames(friends_total)<-c("Source","Target")
+  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
