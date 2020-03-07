@@ -12,7 +12,7 @@ Every comment or suggestion is welcome !
 
 
 In order to work, you have to use auto_setup once you've loaded the package  
-
+  
 You have to give your Twitter credentials to automatic_setup. It will then check if those are valid by trying to make a search in the API. This is why you'll get a message saying "searching tweets"  
-
+  
 Once automatic_setup is done you can use relations_twitter() function

@@ -8,7 +8,7 @@
 # loading of Rtweet, needed to use the function
 library(rtweet)
 
-get_twitter_network <- function(x,token=NULL,max.accounts=50000) {
+get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   longueur_liste_utilisateurs<-length(x)
   # On récupère les infos basiques de nos comptes et on le range dans un df
   infos_liste_utilisateurs<-lookup_users(x, token = NULL)
