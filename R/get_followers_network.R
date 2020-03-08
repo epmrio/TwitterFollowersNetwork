@@ -1,14 +1,17 @@
-###########################################################################
-#                                                                         #
-#                                                                         #
-# Main function to get the network                                        #
-#                                                                         #
-###########################################################################
-
-# loading of Rtweet, needed to use the function
-library(rtweet)
+#' Twitter followers network
+#'
+#' Create a network of Twitter followers from a list of accounts
+#'
+#' @param x A list of screen names from whom the followers and following will be retreive
+#' @param token A variable containing the twitter API credentials. If you used automatic_setup, you can put "twitter_token"
+#' @param max.accounts A maximum number of followers/following. A list of 100 accounts can bring to a million followers/following to retreive for the network. Default is set to 50.000, which is roughly 1 hour long
+#'
+#' @return A dataframe with 2 columns : an Source node and Target node. This dataframe can be exported in csv and used in a network analysing software like Gephi
+#'
+#' @export
 
 get_followers_network <- function(x,token=NULL,max.accounts=50000) {
+  require(rtweet)
   longueur_liste_utilisateurs<-length(x)
   # On récupère les infos basiques de nos comptes et on le range dans un df
   infos_liste_utilisateurs<-lookup_users(x, token = NULL)
