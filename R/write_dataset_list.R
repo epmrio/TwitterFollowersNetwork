@@ -18,11 +18,12 @@
 #' }
 #'
 #' @export
+
 write_dataset_list <- function(dataframes_list) {
   path_1<-getwd()
   name<-c("edges_table","nodes_table")
   compteur<-1
-  for (df in x) {
+  for (df in dataframes_list) {
     write.csv(df,paste0(path_1,"/",name[compteur],".csv"),row.names = FALSE)
     compteur=compteur+1
   }
