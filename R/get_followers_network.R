@@ -8,6 +8,19 @@
 #'
 #' @return A dataframe with 2 columns : an Source node and Target node. This dataframe can be exported in csv and used in a network analysing software like Gephi
 #'
+#' @example
+#'
+#' \dontrun{
+#'
+#' ## Get a network of the following list :
+#' users_list <- c("account-1", "account-2")
+#' # Use the Function to retrieve the network
+#' users_network <- get_followers_network(users_list, token = twitter_token, max_accounts = 100000)
+#' # Export the network to your computer and remove the first column (rownames)
+#' write.csv(users_network, "/PATH_TO_DIRECTORY/users_network.csv", rownames = FALSE)
+#'
+#' }
+#'
 #' @export
 
 get_followers_network <- function(x,token=NULL,max.accounts=50000) {
