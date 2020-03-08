@@ -71,11 +71,11 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   #####
   #On stocke les infos liées à la liste initiale
   accounts_list_init<-lookup_users(liste_utilisateurs_REVU)
-  accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","description","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
-  colnames(accounts_list_init)<-c("Id","source","name","location","description","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
+  accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
+  colnames(accounts_list_init)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   # Je rajoute ici un dataframe qui récupérera toutes les infos sur les différents comptes
-  accounts_total<-as.data.frame(matrix(0, ncol = 13, nrow = 0))
-  colnames(accounts_total)<-c("Id","source","name","location","description","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
+  accounts_total<-as.data.frame(matrix(0, ncol = 12, nrow = 0))
+  colnames(accounts_total)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   #####
   liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
   compteur<-length(liste_utilisateurs_REVU)
@@ -90,12 +90,11 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
     #####
     # Je complète ici le df
     accounts<-data.frame()
-    accounts<-data.frame(Id=1:nrow(recup),source=1:nrow(recup),name=1:nrow(recup),location=1:nrow(recup),description=1:nrow(recup),protected=1:nrow(recup),followers_count=1:nrow(recup),friends_count=1:nrow(recup),listed_count=1:nrow(recup),statuses_count=1:nrow(recup),favourites_count=1:nrow(recup),account_created_at=1:nrow(recup),verified=1:nrow(recup))
+    accounts<-data.frame(Id=1:nrow(recup),source=1:nrow(recup),name=1:nrow(recup),location=1:nrow(recup),protected=1:nrow(recup),followers_count=1:nrow(recup),friends_count=1:nrow(recup),listed_count=1:nrow(recup),statuses_count=1:nrow(recup),favourites_count=1:nrow(recup),account_created_at=1:nrow(recup),verified=1:nrow(recup))
     accounts$Id<-recup$screen_name
     accounts$source<-recup$source
     accounts$name<-recup$name
     accounts$location<-recup$location
-    accounts$description<-recup$description
     accounts$protected<-recup$protected
     accounts$followers_count<-recup$followers_count
     accounts$friends_count<-recup$friends_count
