@@ -10,8 +10,23 @@
 #'
 #' @return Connects to the API and stores your credentials in a variable "twitter_token" that you can use after to retrieve networks
 #'
-#' @example
-#' automatic_setup(cons_key = "...", cons_secret = "...", acc_token = "...", acc_secret = "...", app_name = "...")
+#' @examples
+#'
+#' \dontrun{
+#'
+#' ## To activate the API with your credentials
+#'
+#' # Save your different keys in variables
+#' cons_key = "..."
+#' cons_secret = "..."
+#' acc_token = "..."
+#' acc_secret = "..."
+#' application_name = "..."
+#'
+#' # Use the function to activate the API
+#' automatic_setup(cons_key, cons_secret, acc_token, acc_secret, app_name)
+#'
+#' }
 #'
 #' @export
 

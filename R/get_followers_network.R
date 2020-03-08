@@ -8,7 +8,7 @@
 #'
 #' @return A dataframe with 2 columns : an Source node and Target node. This dataframe can be exported in csv and used in a network analysing software like Gephi
 #'
-#' @example
+#' @examples
 #'
 #' \dontrun{
 #'
