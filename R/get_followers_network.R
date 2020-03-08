@@ -68,7 +68,7 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(followers_total)<-c("Source","Target")
   friends_total<-as.data.frame(matrix(0, ncol = 2, nrow = 0))
   colnames(friends_total)<-c("Source","Target")
-#####
+  #####
   #On stocke les infos liées à la liste initiale
   accounts_list_init<-lookup_users(liste_utilisateurs_REVU)
   accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","description","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
@@ -76,7 +76,7 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   # Je rajoute ici un dataframe qui récupérera toutes les infos sur les différents comptes
   accounts_total<-as.data.frame(matrix(0, ncol = 13, nrow = 0))
   colnames(accounts_total)<-c("Id","source","name","location","description","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
-#####
+  #####
   liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
@@ -87,11 +87,11 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
     followers$Source<-recup$screen_name
     followers$Target<-element
     followers_total<-rbind(followers_total,followers)
-#####
+    #####
     # Je complète ici le df
     accounts<-data.frame()
-    accounts<-data.frame(screen_name=1:nrow(recup),source=1:nrow(recup),name=1:nrow(recup),location=1:nrow(recup),description=1:nrow(recup),protected=1:nrow(recup),followers_count=1:nrow(recup),friends_count=1:nrow(recup),listed_count=1:nrow(recup),statuses_count=1:nrow(recup),favourites_count=1:nrow(recup),account_created_at=1:nrow(recup),verified=1:nrow(recup))
-    accounts$screen_name<-recup$screen_name
+    accounts<-data.frame(Id=1:nrow(recup),source=1:nrow(recup),name=1:nrow(recup),location=1:nrow(recup),description=1:nrow(recup),protected=1:nrow(recup),followers_count=1:nrow(recup),friends_count=1:nrow(recup),listed_count=1:nrow(recup),statuses_count=1:nrow(recup),favourites_count=1:nrow(recup),account_created_at=1:nrow(recup),verified=1:nrow(recup))
+    accounts$Id<-recup$screen_name
     accounts$source<-recup$source
     accounts$name<-recup$name
     accounts$location<-recup$location
@@ -105,7 +105,7 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
     accounts$account_created_at<-recup$account_created_at
     accounts$verified<-recup$verified
     accounts_total<-rbind(accounts_total,accounts)
-#####
+    #####
     try(recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     friends<-data.frame()
     friends<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
@@ -115,9 +115,8 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
     compteur<-compteur-1
   }
   edges_table<-rbind(followers_total,friends_total)
-  print("The process is over. Even if some errors might have occurred, you now have a file containg edges of your network. You can save this file on your computer and open it in a graph visualisation software such as Gephi")
+  print("The process is over. Even if some errors might have occurred, you should now have a file containing 2 dataframes : one Node Dataframes (accounts to be shown on the graph) and one Edges dataframes (links between accounts on the graph). You can save them on your computer by using the write_dataset_list function and open them in a graph visualisation software such as Gephi")
   accounts_total<-rbind(accounts_total,accounts_list_init)
-  node_table<-accounts_total[-duplicated(accounts_total$Id),]
-  return(edges_table)
-  return(node_table)
+  node_table<-accounts_total[!duplicated(accounts_total$Id),]
+  return(list(edges_table,node_table))
 }
