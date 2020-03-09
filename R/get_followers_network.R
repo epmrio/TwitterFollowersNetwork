@@ -43,7 +43,9 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   while (somme_friends_follow > max.accounts) {
     # on calcule une estimation du temps d'attente, en minutes. Tous les 14 comptes (environ), on tape l'API. Donc il faut savoir
     # combien de fois on a 14 comptes dans notres liste pour savoir combien de fois on va taper l'API. On multiplie ensuite par 15
-    temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
+    # temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
+    # autre manière d'exprimer le temps
+    temps_attente_estime=round((somme_friends_follow/5000)*2,digits = 0)
     print(paste0("Le nombre de comptes à récupérer est supérieur à ", max.accounts, " (", somme_friends_follow, ").", " Le délai d'attente est estimé à environ ", temps_attente_estime, " minutes"))
     print(paste0("Le compte le plus gros est ", infos_liste_utilisateurs_ORDER$screen_name[1], ". Il comptabilise en tout ", infos_liste_utilisateurs_ORDER$followers_count[1], " followers. Souhaitez vous le retirer de la liste afin de réduire le temps de récupération ?"))
     # On intègre un input de l'usager pour qu'il dise si il veut enlever les comptes trop gros ou non
@@ -56,10 +58,10 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
       # intégré au dataframe au moment de lookup_users. Donc en me basant sur la longueur du dataframe créé et pas de la liste
       # de départ, je contourne le problème des comptes mal orthographiés
       infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[2:nrow(infos_liste_utilisateurs_ORDER),]
-      temps_attente_estime_REVU<-round((nrow(infos_liste_utilisateurs_ORDER)/12)*15,digits = 0)
+      somme_friends_follow = sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
+      temps_attente_estime_REVU<-round((somme_friends_follow/5000)*2,digits = 0)
       print(paste0("Le nouveau délai d'attente est estimé à ", temps_attente_estime_REVU, " minutes"))
       longueur_liste_utilisateurs<-nrow(infos_liste_utilisateurs_ORDER)
-      somme_friends_follow = sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
     } else if (decision_1 == "no") {
       print(paste0("The process will continue with ", somme_friends_follow, " accounts and an estimated time of ", temps_attente_estime, " minutes. Hang in there..."))
       break
