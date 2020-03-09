@@ -35,7 +35,9 @@ get_followers_network <- function(x,token=NULL,max.accounts=50000) {
   # que la limite initiale
   liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
   ## On met ici une première estimation du temps pour que ça le fasse même si le nombre est plus petit que la limite
-  temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
+  #temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
+  # autre manière d'exprimer le temps
+  temps_attente_estime=round((somme_friends_follow/5000)*2,digits = 0)
   print(paste0("Le nombre de comptes à récupérer correspond à ", somme_friends_follow, ". Le délai d'attente est estimé à environ ", temps_attente_estime, " minutes"))
   # Maintenant on commence la condition si le nombre de comptes est trop grand, on crée un loop tant que c'est trop grand
   while (somme_friends_follow > max.accounts) {
