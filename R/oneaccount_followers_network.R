@@ -23,7 +23,7 @@
 #'
 #' @export
 
-multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
+oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   require(rtweet)
   liste_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
   liste_utilisateurs<-as.vector(as.character(liste_utilisateurs$screen_name))
