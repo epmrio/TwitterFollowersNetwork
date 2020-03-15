@@ -1,10 +1,10 @@
 #' Twitter followers network from one account
 #'
-#' Create a network of Twitter followers from a one person or account
+#' Create a network of Twitter followers from ONE account
 #'
-#' @param x The screennam of ONE account from whom the followers and following will be retreive
+#' @param x The screen name of ONE account from which the followers and following will be retreive
 #' @param token A variable containing the twitter API credentials. If you used automatic_setup, you can put "twitter_token"
-#' @param max.accounts A maximum number of followers/following. If the account has many followers, it can bring to a million followers/following to retreive for the network. Default is set to 50.000, which is roughly 1 hour long
+#' @param max.accounts A maximum number of followers/following. A list of 100 accounts can bring to a million followers/following to retreive for the network. Default is set to 50.000, which is roughly 1 hour long
 #'
 #' @return A dataframe with 2 columns : an Source node and Target node. This dataframe can be exported in csv and used in a network analysing software like Gephi
 #'
@@ -13,9 +13,9 @@
 #' \dontrun{
 #'
 #' ## Get a network of the following list :
-#' ACCOUNT_SCREEN_NAME <- "account-1"
+#' USER_NAME <- "account_name"
 #' # Use the Function to retrieve the network
-#' users_network <- oneaccount_followers_network(ACCOUNT_SCREEN_NAME, token = twitter_token, max_accounts = 100000)
+#' users_network <- oneaccount_followers_network(USER_NAME, token = twitter_token, max_accounts = 100000)
 #' # Export the network to your computer and remove the first column (rownames)
 #' write.csv(users_network, "/PATH_TO_DIRECTORY/users_network.csv", rownames = FALSE)
 #'
@@ -23,13 +23,14 @@
 #'
 #' @export
 
-oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
+multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
   require(rtweet)
+  liste_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  liste_utilisateurs<-as.vector(as.character(liste_utilisateurs$screen_name))
+  longueur_liste_utilisateurs<-length(liste_utilisateurs)
   # On récupère les infos basiques de nos comptes et on le range dans un df
-  infos_liste_utilisateurs<-lookup_users(get_followers(x,n=1000000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  infos_liste_utilisateurs<-lookup_users(liste_utilisateurs, token = NULL)
   infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs[order(infos_liste_utilisateurs$followers_count,decreasing = TRUE),c("screen_name","followers_count","friends_count")]
-  donnees<-as.vector(as.character(infos_liste_utilisateurs$screen_name))
-  longueur_liste_utilisateurs<-length(donnees)
   # on comptabilise le nombre total de follow.er.ing
   somme_friends_follow<-sum(infos_liste_utilisateurs$followers_count)+sum(infos_liste_utilisateurs$friends_count)
   # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
@@ -75,7 +76,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(friends_total)<-c("Source","Target")
   #####
   #On stocke les infos liées à la liste initiale
-  accounts_list_init<-lookup_users(x)
+  accounts_list_init<-lookup_users(liste_utilisateurs_REVU)
   accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
   colnames(accounts_list_init)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   # Je rajoute ici un dataframe qui récupérera toutes les infos sur les différents comptes
@@ -86,7 +87,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
-    try(recup<-lookup_users(get_followers(element, n = 1000000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     followers<-data.frame()
     followers<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     followers$Source<-recup$screen_name
@@ -110,7 +111,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
     accounts$verified<-recup$verified
     accounts_total<-rbind(accounts_total,accounts)
     #####
-    try(recup<-lookup_users(get_friends(element, n = 1000000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     friends<-data.frame()
     friends<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     friends$Target<-recup$screen_name

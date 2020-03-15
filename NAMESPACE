@@ -2,5 +2,4 @@
 
 export(automatic_setup)
 export(multiaccounts_followers_network)
-export(oneaccount_followers_network)
 export(write_dataset_list)
