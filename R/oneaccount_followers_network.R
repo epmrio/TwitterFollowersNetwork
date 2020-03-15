@@ -1,4 +1,4 @@
-#' Twitter followers network
+#' Twitter followers network from one account
 #'
 #' Create a network of Twitter followers from a one person or account
 #'
