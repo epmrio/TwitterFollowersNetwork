@@ -28,7 +28,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   require(rtweet)
   donnees_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
   donnees_utilisateurs2<-lookup_users(get_friends(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
-  donnees_utilisateurs<-rbind(liste_utilisateurs,liste_utilisateurs2)
+  donnees_utilisateurs<-rbind(donnees_utilisateurs,donnees_utilisateurs2)
   liste_utilisateurs<-as.vector(as.character(donnees_utilisateurs$screen_name))
   longueur_liste_utilisateurs<-length(liste_utilisateurs)
   # On récupère les infos basiques de nos comptes et on le range dans un df
