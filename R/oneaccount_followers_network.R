@@ -23,16 +23,21 @@
 #'
 #' @export
 
+
 oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   require(rtweet)
-  liste_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
-  liste_utilisateurs<-as.vector(as.character(liste_utilisateurs$screen_name))
+  donnees_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  donnees_utilisateurs2<-lookup_users(get_friends(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  donnees_utilisateurs<-rbind(liste_utilisateurs,liste_utilisateurs2)
+  liste_utilisateurs<-as.vector(as.character(donnees_utilisateurs$screen_name))
   longueur_liste_utilisateurs<-length(liste_utilisateurs)
   # On récupère les infos basiques de nos comptes et on le range dans un df
-  infos_liste_utilisateurs<-lookup_users(liste_utilisateurs, token = NULL)
+  infos_liste_utilisateurs<-donnees_utilisateurs
   infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs[order(infos_liste_utilisateurs$followers_count,decreasing = TRUE),c("screen_name","followers_count","friends_count")]
+  # On supprime les doublons de cette liste
+  infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[-which(duplicated(infos_liste_utilisateurs_ORDER$screen_name)==TRUE),]
   # on comptabilise le nombre total de follow.er.ing
-  somme_friends_follow<-sum(infos_liste_utilisateurs$followers_count)+sum(infos_liste_utilisateurs$friends_count)
+  somme_friends_follow<-sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
   # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
   # que la limite initiale
   liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
