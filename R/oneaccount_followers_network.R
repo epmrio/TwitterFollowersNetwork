@@ -40,7 +40,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   somme_friends_follow<-sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
   # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
   # que la limite initiale
-  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+  liste_utilisateurs_REVU<-as.vector(as.character(infos_liste_utilisateurs_ORDER$screen_name))
   ## On met ici une première estimation du temps pour que ça le fasse même si le nombre est plus petit que la limite
   #temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
   # autre manière d'exprimer le temps
@@ -88,7 +88,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   accounts_total<-as.data.frame(matrix(0, ncol = 12, nrow = 0))
   colnames(accounts_total)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   #####
-  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+  liste_utilisateurs_REVU<-as.vector(as.character(infos_liste_utilisateurs_ORDER$screen_name))
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
