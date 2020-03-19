@@ -1,8 +1,8 @@
-#' Twitter followers network
+#' Twitter followers network from one account
 #'
-#' Create a network of Twitter followers from a list of accounts
+#' Create a network of Twitter followers from ONE account
 #'
-#' @param x A list of screen names from whom the followers and following will be retreive
+#' @param x The screen name of ONE account from which the followers and following will be retreive
 #' @param token A variable containing the twitter API credentials. If you used automatic_setup, you can put "twitter_token"
 #' @param max.accounts A maximum number of followers/following. A list of 100 accounts can bring to a million followers/following to retreive for the network. Default is set to 50.000, which is roughly 1 hour long
 #'
@@ -13,9 +13,9 @@
 #' \dontrun{
 #'
 #' ## Get a network of the following list :
-#' users_list <- c("account-1", "account-2")
+#' USER_NAME <- "account_name"
 #' # Use the Function to retrieve the network
-#' users_network <- multiaccounts_followers_network(users_list, token = twitter_token, max_accounts = 100000)
+#' users_network <- oneaccount_followers_network(USER_NAME, token = twitter_token, max_accounts = 100000)
 #' # Export the network to your computer and remove the first column (rownames)
 #' write.csv(users_network, "/PATH_TO_DIRECTORY/users_network.csv", rownames = FALSE)
 #'
@@ -23,17 +23,24 @@
 #'
 #' @export
 
-multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
+
+oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   require(rtweet)
-  longueur_liste_utilisateurs<-length(x)
+  donnees_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  donnees_utilisateurs2<-lookup_users(get_friends(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  donnees_utilisateurs<-rbind(donnees_utilisateurs,donnees_utilisateurs2)
+  liste_utilisateurs<-as.vector(as.character(donnees_utilisateurs$screen_name))
+  longueur_liste_utilisateurs<-length(liste_utilisateurs)
   # On récupère les infos basiques de nos comptes et on le range dans un df
-  infos_liste_utilisateurs<-lookup_users_modif(x, token = NULL)
+  infos_liste_utilisateurs<-donnees_utilisateurs
   infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs[order(infos_liste_utilisateurs$followers_count,decreasing = TRUE),c("screen_name","followers_count","friends_count")]
+  # On supprime les doublons de cette liste
+  infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[-which(duplicated(infos_liste_utilisateurs_ORDER$screen_name)==TRUE),]
   # on comptabilise le nombre total de follow.er.ing
-  somme_friends_follow<-sum(infos_liste_utilisateurs$followers_count)+sum(infos_liste_utilisateurs$friends_count)
+  somme_friends_follow<-sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
   # Il faut ici ajouter liste utilisateurs revu. Si on ne l'ajoute pas ici, le script bug lorsque les comptes à récup sont plus petits
   # que la limite initiale
-  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+  liste_utilisateurs_REVU<-as.vector(as.character(infos_liste_utilisateurs_ORDER$screen_name))
   ## On met ici une première estimation du temps pour que ça le fasse même si le nombre est plus petit que la limite
   #temps_attente_estime=round((longueur_liste_utilisateurs/12)*15,digits = 0)
   # autre manière d'exprimer le temps
@@ -74,18 +81,18 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(friends_total)<-c("Source","Target")
   #####
   #On stocke les infos liées à la liste initiale
-  accounts_list_init<-lookup_users_modif(liste_utilisateurs_REVU)
+  accounts_list_init<-lookup_users(liste_utilisateurs_REVU)
   accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
   colnames(accounts_list_init)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   # Je rajoute ici un dataframe qui récupérera toutes les infos sur les différents comptes
   accounts_total<-as.data.frame(matrix(0, ncol = 12, nrow = 0))
   colnames(accounts_total)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   #####
-  liste_utilisateurs_REVU<-infos_liste_utilisateurs_ORDER$screen_name
+  liste_utilisateurs_REVU<-as.vector(as.character(infos_liste_utilisateurs_ORDER$screen_name))
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
-    try(recup<-lookup_users_modif(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     followers<-data.frame()
     followers<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     followers$Source<-recup$screen_name
@@ -109,7 +116,7 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
     accounts$verified<-recup$verified
     accounts_total<-rbind(accounts_total,accounts)
     #####
-    try(recup<-lookup_users_modif(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     friends<-data.frame()
     friends<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     friends$Target<-recup$screen_name
@@ -124,113 +131,113 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
   return(list(edges_table,node_table))
 }
 
-
-
-### Next functions comes directlyr from rtweet package. I had to modified them to try to bypass 90.000 limit issue
-lookup_users_modif <- function(users, parse = TRUE, token = NULL) {
-  args <- list(users = users, parse = parse, token = token)
-  do.call("lookup_users_modif_", args)
-}
-
-lookup_users_modif_ <- function(users,
-                          token = NULL,
-                          parse = TRUE) {
-  stopifnot(is.atomic(users))
-  if (length(users) < 101L) {
-    usr <- .user_lookup(users, token)
-  } else {
-    if (length(users) > 5000000L) {
-      message("max number of users exceeded; looking up first 90,000. Na warranty that the query will end correctly. We recommend that you exclude the accounts when there is millions of followers")
-      users <- users[1:5000000]
-    }
-    n.times <- ceiling(length(users) / 100)
-    from.id <- 1L
-    usr <- vector("list", n.times)
-    for (i in seq_len(n.times)) {
-      to.id <- from.id + 99L
-      if (to.id > length(users)) {
-        to.id <- length(users)
-      }
-      usr[[i]] <- .user_lookup(users[from.id:to.id], token)
-      if (parse) {
-        usr[[i]] <- check_for_errors(usr[[i]])
-      }
-      from.id <- to.id + 1L
-      if (from.id > length(users)) break
-    }
-  }
-  if (parse) {
-    usr <- users_with_tweets(usr)
-  }
-  usr
-}
-
-
-check_for_errors <- function(x) {
-  if (identical(c("code", "message"), names(x))) {
-    message("Error code: ", x$code)
-    message(x$message)
-    return(tibble::as_tibble())
-  } else if (is.character(x)) {
-    message(x)
-    return(tibble::as_tibble())
-  }
-  x
-}
-
-
-has_read_access <- function(x) {
-  al <- get_access_level(x)
-  identical(al, "read")
-}
-
-
-get_access_level <- function(token) {
-  if ("access_level" %in% names(attributes(token))) {
-    return(attr(token, "access_level"))
-  }
-  r <- httr::GET(
-    "https://api.twitter.com/1.1/account/verify_credentials.json",
-    token)
-  headers <- r$all_headers[[1]]$headers
-  if (has_name_(headers, "x-access-level")) {
-    access_level <- headers$`x-access-level`
-  } else {
-    access_level <- ""
-  }
-  attr(token, "access_level") <- access_level
-  access_level
-}
-
-
-.user_lookup <- function(users, token = NULL) {
-  ## gotta have ut8-encoding for the comma separated IDs
-  ## set scipen to ensure IDs are not rounded
-  op_enc <- getOption("encoding")
-  op_sci <- getOption("scipen")
-  on.exit(options(scipen = op_sci, encoding = op_enc), add = TRUE)
-  options(scipen = 14, encoding = "UTF-8")
-
-  query <- "users/lookup"
-  get <- TRUE
-  if (length(users) > 100) {
-    users <- users[1:100]
-  }
-  token <- check_token(token)
-  if (length(users) > 80 && has_write_access(token)) {
-    get <- FALSE
-  }
-  params <- list(id_type = paste0(users, collapse = ","))
-  names(params)[1] <- .ids_type(users)
-  url <- make_url(
-    query = query,
-    param = params
-  )
-  resp <- TWIT(get = get, url, token)
-  from_js(resp)
-}
-
-has_write_access <- function(x) {
-  al <- get_access_level(x)
-  length(al) == 1 && grepl("write", al)
-}
+###### DELETE FOLLOWING
+#
+# ### Next functions comes directlyr from rtweet package. I had to modified them to try to bypass 90.000 limit issue
+# lookup_users_modif <- function(users, parse = TRUE, token = NULL) {
+#   args <- list(users = users, parse = parse, token = token)
+#   do.call("lookup_users_modif_", args)
+# }
+#
+# lookup_users_modif_ <- function(users,
+#                                 token = NULL,
+#                                 parse = TRUE) {
+#   stopifnot(is.atomic(users))
+#   if (length(users) < 101L) {
+#     usr <- .user_lookup(users, token)
+#   } else {
+#     if (length(users) > 5000000L) {
+#       message("max number of users exceeded; looking up first 90,000. Na warranty that the query will end correctly. We recommend that you exclude the accounts when there is millions of followers")
+#       users <- users[1:5000000]
+#     }
+#     n.times <- ceiling(length(users) / 100)
+#     from.id <- 1L
+#     usr <- vector("list", n.times)
+#     for (i in seq_len(n.times)) {
+#       to.id <- from.id + 99L
+#       if (to.id > length(users)) {
+#         to.id <- length(users)
+#       }
+#       usr[[i]] <- .user_lookup(users[from.id:to.id], token)
+#       if (parse) {
+#         usr[[i]] <- check_for_errors(usr[[i]])
+#       }
+#       from.id <- to.id + 1L
+#       if (from.id > length(users)) break
+#     }
+#   }
+#   if (parse) {
+#     usr <- users_with_tweets(usr)
+#   }
+#   usr
+# }
+#
+#
+# check_for_errors <- function(x) {
+#   if (identical(c("code", "message"), names(x))) {
+#     message("Error code: ", x$code)
+#     message(x$message)
+#     return(tibble::as_tibble())
+#   } else if (is.character(x)) {
+#     message(x)
+#     return(tibble::as_tibble())
+#   }
+#   x
+# }
+#
+#
+# has_read_access <- function(x) {
+#   al <- get_access_level(x)
+#   identical(al, "read")
+# }
+#
+#
+# get_access_level <- function(token) {
+#   if ("access_level" %in% names(attributes(token))) {
+#     return(attr(token, "access_level"))
+#   }
+#   r <- httr::GET(
+#     "https://api.twitter.com/1.1/account/verify_credentials.json",
+#     token)
+#   headers <- r$all_headers[[1]]$headers
+#   if (has_name_(headers, "x-access-level")) {
+#     access_level <- headers$`x-access-level`
+#   } else {
+#     access_level <- ""
+#   }
+#   attr(token, "access_level") <- access_level
+#   access_level
+# }
+#
+#
+# .user_lookup <- function(users, token = NULL) {
+#   ## gotta have ut8-encoding for the comma separated IDs
+#   ## set scipen to ensure IDs are not rounded
+#   op_enc <- getOption("encoding")
+#   op_sci <- getOption("scipen")
+#   on.exit(options(scipen = op_sci, encoding = op_enc), add = TRUE)
+#   options(scipen = 14, encoding = "UTF-8")
+#
+#   query <- "users/lookup"
+#   get <- TRUE
+#   if (length(users) > 100) {
+#     users <- users[1:100]
+#   }
+#   token <- check_token(token)
+#   if (length(users) > 80 && has_write_access(token)) {
+#     get <- FALSE
+#   }
+#   params <- list(id_type = paste0(users, collapse = ","))
+#   names(params)[1] <- .ids_type(users)
+#   url <- make_url(
+#     query = query,
+#     param = params
+#   )
+#   resp <- TWIT(get = get, url, token)
+#   from_js(resp)
+# }
+#
+# has_write_access <- function(x) {
+#   al <- get_access_level(x)
+#   length(al) == 1 && grepl("write", al)
+# }
