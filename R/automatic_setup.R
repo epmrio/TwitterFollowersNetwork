@@ -33,6 +33,7 @@
 automatic_setup <- function(cons_key,cons_secret,acc_token,acc_secret,app_name) {
   # Checking rtweet package and loading it
   require(rtweet)
+  library(rtweet)
   # Setting authentification using rtweet method
   # Using "create_token" function from rtweet to get Twitter authorization
   twitter_token <- create_token(app = app_name, consumer_key = cons_key, consumer_secret = cons_secret, access_token = acc_token, access_secret = acc_secret)

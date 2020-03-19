@@ -25,8 +25,9 @@
 
 
 oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
-  donnees_utilisateurs<-lookup_users(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
-  donnees_utilisateurs2<-lookup_users(get_friends(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  require(rtweet)
+  donnees_utilisateurs<-lookup_users_modif(get_followers(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
+  donnees_utilisateurs2<-lookup_users_modif(get_friends(x,n=100000000,retryonratelimit = TRUE,parse = TRUE)$user_id)
   donnees_utilisateurs<-rbind(donnees_utilisateurs,donnees_utilisateurs2)
   liste_utilisateurs<-as.vector(as.character(donnees_utilisateurs$screen_name))
   longueur_liste_utilisateurs<-length(liste_utilisateurs)
@@ -80,7 +81,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(friends_total)<-c("Source","Target")
   #####
   #On stocke les infos liées à la liste initiale
-  accounts_list_init<-lookup_users(liste_utilisateurs_REVU)
+  accounts_list_init<-lookup_users_modif(liste_utilisateurs_REVU)
   accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
   colnames(accounts_list_init)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   # Je rajoute ici un dataframe qui récupérera toutes les infos sur les différents comptes
@@ -91,7 +92,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
-    try(recup<-lookup_users(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users_modif(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     followers<-data.frame()
     followers<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     followers$Source<-recup$screen_name
@@ -115,7 +116,7 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
     accounts$verified<-recup$verified
     accounts_total<-rbind(accounts_total,accounts)
     #####
-    try(recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users_modif(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     friends<-data.frame()
     friends<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     friends$Target<-recup$screen_name
@@ -132,14 +133,14 @@ oneaccount_followers_network <- function(x,token=NULL,max.accounts=50000) {
 
 
 ### Next functions comes directlyr from rtweet package. I had to modified them to try to bypass 90.000 limit issue
-lookup_users <- function(users, parse = TRUE, token = NULL) {
+lookup_users_modif <- function(users, parse = TRUE, token = NULL) {
   args <- list(users = users, parse = parse, token = token)
-  do.call("lookup_users_", args)
+  do.call("lookup_users_modif_", args)
 }
 
-lookup_users_ <- function(users,
-                          token = NULL,
-                          parse = TRUE) {
+lookup_users_modif_ <- function(users,
+                                token = NULL,
+                                parse = TRUE) {
   stopifnot(is.atomic(users))
   if (length(users) < 101L) {
     usr <- .user_lookup(users, token)
