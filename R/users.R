@@ -39,12 +39,12 @@
 #' @return A tibble of users data.
 #' @family users
 #' @export
-lookup_users <- function(users, parse = TRUE, token = NULL) {
+lookup_users_modif <- function(users, parse = TRUE, token = NULL) {
   args <- list(users = users, parse = parse, token = token)
-  do.call("lookup_users_", args)
+  do.call("lookup_users_modif_", args)
 }
 
-lookup_users_ <- function(users,
+lookup_users_modif_ <- function(users,
                           token = NULL,
                           parse = TRUE) {
   stopifnot(is.atomic(users))

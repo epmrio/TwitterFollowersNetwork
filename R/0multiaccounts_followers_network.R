@@ -24,10 +24,9 @@
 #' @export
 
 multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
-  require(rtweet)
   longueur_liste_utilisateurs<-length(x)
   # On récupère les infos basiques de nos comptes et on le range dans un df
-  infos_liste_utilisateurs<-lookup_users(x, token = NULL)
+  infos_liste_utilisateurs<-lookup_users_modif(x, token = NULL)
   infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs[order(infos_liste_utilisateurs$followers_count,decreasing = TRUE),c("screen_name","followers_count","friends_count")]
   # on comptabilise le nombre total de follow.er.ing
   somme_friends_follow<-sum(infos_liste_utilisateurs$followers_count)+sum(infos_liste_utilisateurs$friends_count)
@@ -55,7 +54,7 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
       # J'ai modifié ici un élément, j'ai écrit nrow(infos_liste_utilisateurs_ORDER). Avant il y avait la longueur de la liste
       # le problème c'est que avec la longueur de la liste, si il y avait des faux comptes ou des comptes mal écris ou qui
       # n'existent pas, ça faisiat bugger le process. La différence ici c'est que les comptes qui n'existent pas ne sont pas
-      # intégré au dataframe au moment de lookup_users. Donc en me basant sur la longueur du dataframe créé et pas de la liste
+      # intégré au dataframe au moment de lookup_users_modif. Donc en me basant sur la longueur du dataframe créé et pas de la liste
       # de départ, je contourne le problème des comptes mal orthographiés
       infos_liste_utilisateurs_ORDER<-infos_liste_utilisateurs_ORDER[2:nrow(infos_liste_utilisateurs_ORDER),]
       somme_friends_follow = sum(infos_liste_utilisateurs_ORDER$followers_count)+sum(infos_liste_utilisateurs_ORDER$friends_count)
@@ -74,7 +73,7 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
   colnames(friends_total)<-c("Source","Target")
   #####
   #On stocke les infos liées à la liste initiale
-  accounts_list_init<-lookup_users(liste_utilisateurs_REVU)
+  accounts_list_init<-lookup_users_modif(liste_utilisateurs_REVU)
   accounts_list_init<-accounts_list_init[,c("screen_name","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")]
   colnames(accounts_list_init)<-c("Id","source","name","location","protected","followers_count","friends_count","listed_count","statuses_count","favourites_count","account_created_at","verified")
   # Je rajoute ici un dataframe qui récupérera toutes les infos sur les différents comptes
@@ -85,7 +84,7 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
   compteur<-length(liste_utilisateurs_REVU)
   for (element in liste_utilisateurs_REVU) {
     print(paste0("nous sommes à ", element, ". Il reste ", compteur, " éléments à récupérer"))
-    try(recup<-lookup_users(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users_modif(get_followers(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     followers<-data.frame()
     followers<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     followers$Source<-recup$screen_name
@@ -109,7 +108,7 @@ multiaccounts_followers_network <- function(x,token=NULL,max.accounts=50000) {
     accounts$verified<-recup$verified
     accounts_total<-rbind(accounts_total,accounts)
     #####
-    try(recup<-lookup_users(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
+    try(recup<-lookup_users_modif(get_friends(element, n = 1000000, retryonratelimit = TRUE, parse = TRUE, verbose = TRUE, token = NULL)$user_id))
     friends<-data.frame()
     friends<-data.frame(Source=1:nrow(recup),Target=1:nrow(recup))
     friends$Target<-recup$screen_name
