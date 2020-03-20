@@ -51,9 +51,9 @@ lookup_users_ <- function(users,
   if (length(users) < 101L) {
     usr <- .user_lookup(users, token)
   } else {
-    if (length(users) > 90000L) {
+    if (length(users) > 5000000L) {
       message("max number of users exceeded; looking up first 90,000")
-      users <- users[1:90000]
+      users <- users[1:5000000]
     }
     n.times <- ceiling(length(users) / 100)
     from.id <- 1L
